@@ -13,10 +13,11 @@ export const styles = StyleSheet.create({
   label: { fontWeight: 'bold', marginBottom: 5 },
   inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#eee', borderRadius: 15, marginBottom: 20, paddingHorizontal: 15 },
   inputIcon: { marginRight: 10 },
-  input: { flex: 1, height: 50 },
+  input: { flex: 1, height: 50, backgroundColor: 'transparent' },
   button: { backgroundColor: '#000', borderRadius: 15, height: 55, justifyContent: 'center', alignItems: 'center', marginTop: 10 },
   buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   footerText: { textAlign: 'center', marginTop: 15, color: '#333' },
   link: { color: '#00aeef', fontWeight: 'bold', textDecorationLine: 'underline' },
-  inputError: { borderColor: 'red', borderWidth: 2,}
+  inputError: { borderColor: 'red', borderWidth: 2,},
+  customPlaceholder: { position: 'absolute', left: 45, color: '#aaa', zIndex: -1},
 });

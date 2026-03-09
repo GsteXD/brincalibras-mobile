@@ -1,11 +1,37 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons'; // Para os ícones
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Animated, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useLogin } from '../../hooks/useLogin';
 import { styles } from './login.styles';
 
 export default function LoginScreen() {
-  const { email, setEmail, senha, setSenha, erro, validarESubmeter } = useLogin();
+  const { 
+    email, setEmail, 
+    senha, setSenha, 
+    erro, validarESubmeter,
+    focusAnimEmail, animateFocus,
+    focusAnimSenha 
+  } = useLogin();
+
+  const placeholderOpacityEmail = focusAnimEmail.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0], // 1 quando blur (visível), 0 quando focado (invisível)
+  });
+
+  const backgroundColorEmail = focusAnimEmail.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#eeeeee', '#d1d1d1']
+  });
+
+  const placeholderOpacitySenha = focusAnimSenha.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0], 
+  });
+
+  const backgroundColorSenha = focusAnimSenha.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#eeeeee', '#d1d1d1']
+  });
 
   return (
     <View style={styles.container}>
@@ -31,27 +57,49 @@ export default function LoginScreen() {
       {/* Formulário */}
       <View style={styles.inputSection}>
         <Text style={styles.label}>E-mail</Text>
-        <View style={styles.inputContainer}>
-          <Ionicons name="mail-outline" size={20} color="#999" style={styles.inputIcon} />
+        <Animated.View style={[styles.inputContainer, {backgroundColor: backgroundColorEmail}]}>
+          <Ionicons name="mail-outline" size={20} color="#000000" style={styles.inputIcon} />
+          <Animated.Text
+            style={[
+              styles.customPlaceholder,
+              { opacity: placeholderOpacityEmail }
+            ]}
+          >
+            email@email.com
+          </Animated.Text>
           <TextInput 
             style={[styles.input, erro.senha && styles.inputError]} 
-            placeholder="email@email.com" 
+            onFocus={() => animateFocus(focusAnimEmail, 1)}
+            onBlur={(e) => {
+              if (email === "") animateFocus(focusAnimEmail, 0)
+            }} 
             value={email}
             onChangeText={setEmail}
           />
-        </View>
+        </Animated.View>
 
         <Text style={styles.label}>Senha</Text>
-        <View style={styles.inputContainer}>
-          <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
+        <Animated.View style={[styles.inputContainer, {backgroundColor: backgroundColorSenha}]}>
+          <Ionicons name="lock-closed-outline" size={20} color="#000000" style={styles.inputIcon} />
+          <Animated.Text
+            style={[
+              styles.customPlaceholder,
+              { opacity: placeholderOpacitySenha }
+            ]}
+          >
+            ***************
+          </Animated.Text>
           <TextInput 
             style={[styles.input, erro.senha && styles.inputError]} 
-            placeholder="***************" 
+            onFocus={() => animateFocus(focusAnimSenha, 1)}
+            onBlur={(e) => {
+              if (senha === "") animateFocus(focusAnimSenha, 0)
+            }} 
             secureTextEntry 
             value={senha}
             onChangeText={setSenha}
           />
-        </View>
+        </Animated.View>
 
         <TouchableOpacity style={styles.button} onPress={validarESubmeter}>
           <Text style={styles.buttonText}>Entrar</Text>
