@@ -18,6 +18,5 @@ export const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   footerText: { textAlign: 'center', marginTop: 15, color: '#333' },
   link: { color: '#00aeef', fontWeight: 'bold', textDecorationLine: 'underline' },
-  inputError: { borderColor: 'red', borderWidth: 2,},
   customPlaceholder: { position: 'absolute', left: 45, color: '#aaa', zIndex: -1},
 });
