@@ -21,4 +21,6 @@ export const styles = StyleSheet.create({
   customPlaceholder: { position: 'absolute', left: 45, color: '#aaa', zIndex: -1},
   errorBox: { backgroundColor: '#fcc5c5', borderWidth: 2, borderColor: '#ff3232', padding: 10, marginBottom: 20, alignItems: 'center', justifyContent: 'center' },
   errorText: { color: '#d32f2f', fontWeight: 'bold', textAlign: 'center' },
+  msgErro: { color: 'red', fontSize: 12, marginBottom: 6, marginLeft: 10 },
+  labelErro: { flexDirection: 'row', alignItems: 'flex-end' }
 });
