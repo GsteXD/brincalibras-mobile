@@ -4,7 +4,7 @@ import { Animated, Text, TextInput, View } from 'react-native';
 import { styles } from '../screens/login/login.styles'; // Reutilizando seus estilos
 
 interface Props {
-  label: string;
+  label: string | React.ReactNode;
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
