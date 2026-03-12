@@ -1,6 +1,6 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useCadastro } from '../../../../hooks/useCadastro';
 import { InputAnimado } from '../../components/inputAnimado';
 import { styles } from '../login/login.styles';
@@ -10,7 +10,8 @@ export default function CadastroScreen() {
         nome, setNome, email, setEmail, senha, setSenha, confirmaSenha, setConfirmaSenha,
         erro, validarECadastrar, animateFocus,
         focusAnimNome, focusAnimEmail, focusAnimSenha, focusAnimConfirma, errorAnim,
-        mensagens
+        mensagens,
+        sucesso, fecharESair
     } = useCadastro();
 
     return (
@@ -117,6 +118,31 @@ export default function CadastroScreen() {
                 <Text style={styles.link}>Faça login</Text>
                 </Link>
             </Text>
+
+            {/* Modal de Sucesso */}
+            <Modal
+                visible={sucesso}
+                transparent={true}
+                animationType="fade"
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.successCard}>
+                        <Ionicons name="checkmark-circle" size={60} color="#4CAF50" />
+                        <Text style={styles.successTitle}>Sucesso!</Text>
+                        <Text style={styles.successMessage}>
+                            Sua conta foi criada com sucesso! <br/>Faça o login para continuar.
+                        </Text>
+                        
+                        <TouchableOpacity 
+                            style={styles.successButton} 
+                            onPress={fecharESair}
+                        >
+                            <Text style={styles.successButtonText}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
         </ScrollView>
     );
 }

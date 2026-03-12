@@ -1,12 +1,16 @@
+import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Animated } from 'react-native';
 
 export const useCadastro = () => {
+    const router = useRouter();
+
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmaSenha, setConfirmaSenha] = useState('');
     const [mensagens, setMensagens] = useState<any>({});
+    const [sucesso, setSucesso] = useState(false); // Estado para o modal
 
     const [erro, setErro] = useState({ nome: false, email: false, senha: false, confirmaSenha: false });
 
@@ -40,6 +44,11 @@ export const useCadastro = () => {
         setErro(resetarErros)
     };
 
+    const fecharESair = () => {
+        setSucesso(false);
+        router.replace('/');
+    }
+
     const validarECadastrar = async () => {
         try {
             const response = await fetch('http://localhost:8080/users', {
@@ -63,6 +72,7 @@ export const useCadastro = () => {
                 dispararErro();
             } else if (response.ok) {
                 resetarErro();
+                setSucesso(true);
             }
         } catch (e) {
             console.error("Erro na conexão");
@@ -73,6 +83,7 @@ export const useCadastro = () => {
         nome, setNome, email, setEmail, senha, setSenha, confirmaSenha, setConfirmaSenha,
         erro, validarECadastrar, animateFocus,
         focusAnimNome, focusAnimEmail, focusAnimSenha, focusAnimConfirma, errorAnim,
-        mensagens
+        mensagens,
+        sucesso, fecharESair
     };
 };
