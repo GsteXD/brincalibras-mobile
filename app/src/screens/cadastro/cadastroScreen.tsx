@@ -8,7 +8,7 @@ import { styles } from '../login/login.styles';
 export default function CadastroScreen() {
     const { 
         nome, setNome, email, setEmail, senha, setSenha, confirmaSenha, setConfirmaSenha,
-        erro, validarECadastrar, animateFocus,
+        erro, erroGeral, validarECadastrar, animateFocus,
         focusAnimNome, focusAnimEmail, focusAnimSenha, focusAnimConfirma, errorAnim,
         mensagens,
         sucesso, fecharESair
@@ -91,8 +91,8 @@ export default function CadastroScreen() {
                     label={
                         <View style={styles.labelErro}>
                             <Text style={styles.label}>Confirmar senha</Text>
-                            {erro.senha && (
-                                <Text style={styles.msgErro}> {mensagens.senha}</Text>
+                            {erro.confirmaSenha && (
+                                <Text style={styles.msgErro}> {mensagens.confirmaSenha}</Text>
                             )}
                         </View>
                     }
@@ -106,6 +106,10 @@ export default function CadastroScreen() {
                     secureTextEntry 
                     animateFocus={animateFocus} 
                 />
+
+                {erroGeral ? (
+                    <Text style={styles.msgErro}>{erroGeral}</Text>
+                ) : null}
 
                 <TouchableOpacity style={styles.button} onPress={validarECadastrar}>
                     <Text style={styles.buttonText}>Cadastrar</Text>

@@ -8,7 +8,7 @@ import { styles } from './login.styles';
 
 export default function LoginScreen() {
   const {
-    email, setEmail, senha, setSenha, erro, errorMessage, validarESubmeter,
+    email, setEmail, senha, setSenha, erro, mensagens, erroGeral, validarESubmeter,
     focusAnimEmail, focusAnimSenha, errorAnim, animateFocus
   } = useLogin();
 
@@ -34,16 +34,16 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.inputSection}>
-        {errorMessage ? (
-          <Animated.View style={[styles.errorBox, { opacity: errorAnim }]}> 
-            {errorMessage.split(/\s*\.\s*/).filter(Boolean).map((msg, idx) => (
-              <Text style={styles.errorText} key={idx}>{msg.trim()}</Text>
-            ))}
-          </Animated.View>
-        ) : null}
 
         <InputAnimado
-          label="E-mail"
+          label={
+              <View style={styles.labelErro}>
+                  <Text style={styles.label}>E-mail</Text>
+                  {erro.email && (
+                      <Text style={styles.msgErro}>{mensagens.email}</Text>
+                  )}
+              </View>
+          }
           placeholder="email@email.com"
           value={email}
           onChangeText={setEmail}
@@ -55,7 +55,14 @@ export default function LoginScreen() {
         />
 
         <InputAnimado
-          label="Senha"
+          label={
+              <View style={styles.labelErro}>
+                  <Text style={styles.label}>Senha</Text>
+                  {erro.senha && (
+                      <Text style={styles.msgErro}>{mensagens.senha}</Text>
+                  )}
+              </View>
+          }
           placeholder="***************"
           value={senha}
           onChangeText={setSenha}
@@ -66,6 +73,10 @@ export default function LoginScreen() {
           secureTextEntry
           animateFocus={animateFocus}
         />
+
+        {erroGeral ? (
+            <Text style={styles.msgErro}>{erroGeral}</Text>
+        ) : null}
 
         <TouchableOpacity style={styles.button} onPress={validarESubmeter}>
           <Text style={styles.buttonText}>Entrar</Text>

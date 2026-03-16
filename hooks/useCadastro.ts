@@ -10,6 +10,7 @@ export const useCadastro = () => {
     const [senha, setSenha] = useState('');
     const [confirmaSenha, setConfirmaSenha] = useState('');
     const [mensagens, setMensagens] = useState<any>({});
+    const [erroGeral, setErroGeral] = useState('');
     const [sucesso, setSucesso] = useState(false); // Estado para o modal
 
     const [erro, setErro] = useState({ nome: false, email: false, senha: false, confirmaSenha: false });
@@ -34,14 +35,15 @@ export const useCadastro = () => {
     const resetarErro = () => {
         Animated.timing(errorAnim, { toValue: 0, duration: 200, useNativeDriver: false }).start();
 
-        const resetarErros = {
+        setErro({
             nome: false,
             email: false,
             senha: false,
             confirmaSenha: false
-        }
+        });
 
-        setErro(resetarErros)
+        setMensagens({});
+        setErroGeral('');
     };
 
     const fecharESair = () => {
@@ -49,39 +51,110 @@ export const useCadastro = () => {
         router.replace('/');
     }
 
+    const emailValido = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
     const validarECadastrar = async () => {
+        const novosErros = {
+            nome: false,
+            email: false,
+            senha: false,
+            confirmaSenha: false
+        };
+
+        const novasMensagens: any = {};
+
+        if (!nome.trim()) {
+            novosErros.nome = true;
+            novasMensagens.nome = 'Nome é obrigatório';
+        }
+
+        if (!email.trim()) {
+            novosErros.email = true;
+            novasMensagens.email = 'E-mail é obrigatório';
+        } else if (!emailValido(email)) {
+            novosErros.email = true;
+            novasMensagens.email = 'Digite um e-mail válido';
+        }
+
+        if (!senha.trim()) {
+            novosErros.senha = true;
+            novasMensagens.senha = 'Senha é obrigatória';
+        }
+
+        if (senha.length < 6) {
+            novosErros.senha = true;
+            novasMensagens.senha = 'Senha deve ter no mínimo 6 caracteres';
+        }
+
+        if (!confirmaSenha.trim()) {
+            novosErros.confirmaSenha = true;
+            novasMensagens.confirmaSenha = 'Confirmação de senha é obrigatória';
+        } else if (senha !== confirmaSenha) {
+            novosErros.confirmaSenha = true;
+            novasMensagens.confirmaSenha = 'As senhas não coincidem';
+        }
+
+        const temErro = Object.values(novosErros).some(Boolean);
+
+        if (temErro) {
+            setErro(novosErros);
+            setMensagens(novasMensagens);
+            dispararErro();
+            return;
+        }
+
         try {
-            const response = await fetch('http://localhost:8080/users', {
+            const response = await fetch('http://192.168.15.5:8080/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, email, senha })
+                body: JSON.stringify({ nome, email, senha, confirmaSenha })
             });
 
+            const data = await response.json();
+
             if (response.status === 400 || response.status === 409) {
-                const data = await response.json();
-                
-                const novosErros = {
+                const errosBack = {
                     nome: !!data.fields?.nome,
-                    email: response.status === 409 ? true : !!data.fields?.email,
+                    email: !!data.fields?.email,
                     senha: !!data.fields?.senha,
-                    confirmaSenha: false 
+                    confirmaSenha: !!data.fields?.confirmaSenha
                 };
 
-                setErro(novosErros);
-                setMensagens(data.fields || { email: data.message });
+                const mensagensBack: any = {
+                    nome: data.fields?.nome,
+                    email: data.fields?.email,
+                    senha: data.fields?.senha,
+                    confirmaSenha: data.fields?.confirmaSenha
+                };
+
+                setErro(errosBack);
+                setMensagens(mensagensBack);
                 dispararErro();
-            } else if (response.ok) {
+                return;
+            }
+
+            if (response.ok) {
                 resetarErro();
                 setSucesso(true);
+
+                
+                setNome('');
+                setEmail('');
+                setSenha('');
+                setConfirmaSenha('');
             }
+
         } catch (e) {
-            console.error("Erro na conexão");
+            setErroGeral('Erro na conexão com o servidor');
+            console.error('Erro na conexão', e);
         }
     };
 
     return {
         nome, setNome, email, setEmail, senha, setSenha, confirmaSenha, setConfirmaSenha,
-        erro, validarECadastrar, animateFocus,
+        erro, erroGeral, validarECadastrar, animateFocus,
         focusAnimNome, focusAnimEmail, focusAnimSenha, focusAnimConfirma, errorAnim,
         mensagens,
         sucesso, fecharESair

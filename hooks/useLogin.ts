@@ -1,20 +1,30 @@
+import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Animated } from 'react-native';
 
 export const useLogin = () => {
+    const router = useRouter();
+
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
 
     const [erro, setErro] = useState({ email: false, senha: false });
-    const [errorMessage, setErrorMessage] = useState('');
+    const [mensagens, setMensagens] = useState<any>({});
+    const [erroGeral, setErroGeral] = useState('');
 
     const focusAnimEmail = useRef(new Animated.Value(0)).current;
     const focusAnimSenha = useRef(new Animated.Value(0)).current;
+    const errorAnim = useRef(new Animated.Value(0)).current;
 
-    const errorAnim = useRef(new Animated.Value(0)).current; // 0 = normal, 1 = erro
+    const animateFocus = (value: Animated.Value, toValue: number) => {
+        Animated.timing(value, {
+            toValue,
+            duration: 200,
+            useNativeDriver: false,
+        }).start();
+    };
 
-    const dispararErro = (message: string) => {
-        setErrorMessage(message);
+    const dispararErro = () => {
         Animated.sequence([
             Animated.timing(errorAnim, {
                 toValue: 1,
@@ -24,56 +34,108 @@ export const useLogin = () => {
         ]).start();
     };
 
-    const animateFocus = (value: Animated.Value, toValue: number) => {
-        Animated.timing(value, {
-        toValue,
-        duration: 200, 
-        useNativeDriver: false, 
-        }).start();
-    };
-
     const resetarErro = () => {
         Animated.timing(errorAnim, {
             toValue: 0,
             duration: 200,
             useNativeDriver: false
         }).start();
-        setErrorMessage('');
+
+        setErro({ email: false, senha: false });
+        setMensagens({});
+        setErroGeral('');
     };
 
-    const validarESubmeter = () => {
-        //Em algum momento a api do back-end tem que entrar aqui, por enquanto ele só faz a
-        //validação dos campos vazios
+    const emailValido = (email: string) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validarESubmeter = async () => {
+        resetarErro();
+
         let temErro = false;
         const novoErro = { email: false, senha: false };
-        let message = '';
+        const novasMensagens: any = {};
 
-        if (!email || email === "") {
+        // Validações front-end
+        if (!email.trim()) {
             novoErro.email = true;
+            novasMensagens.email = 'E-mail é obrigatório';
             temErro = true;
-            message += '*E-mail é obrigatório. '; //fazendo a exibição de mensagens de erro assim, enquanto não há back-end.
-        }
-        if (!senha || senha === "") {
-            novoErro.senha = true;
+        } else if (!emailValido(email)) {
+            novoErro.email = true;
+            novasMensagens.email = 'Digite um e-mail válido';
             temErro = true;
-            message += '*Senha é obrigatória. ';
         }
 
-        setErro(novoErro); //Registra se houve erro ou não
+        if (!senha.trim()) {
+            novoErro.senha = true;
+            novasMensagens.senha = 'Senha é obrigatória';
+            temErro = true;
+        }
+
+        setErro(novoErro);
+        setMensagens(novasMensagens);
 
         if (temErro) {
-            dispararErro(message);
-        } else {
-            resetarErro(); //Desfaz o background vermelho
+            dispararErro();
+            return;
         }
 
-        return;
+        try {
+            const response = await fetch('http://192.168.15.5:8080/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const data = await response.json();
+
+            // Erros de validação do back (ex: @NotBlank, @Email)
+            if (response.status === 400) {
+                const errosBack = {
+                    email: !!data.fields?.email,
+                    senha: !!data.fields?.senha
+                };
+
+                const mensagensBack = {
+                    email: data.fields?.email,
+                    senha: data.fields?.senha
+                };
+
+                setErro(errosBack);
+                setMensagens(mensagensBack);
+                dispararErro();
+                return;
+            }
+
+            // Erro de autenticação
+            if (response.status === 401) {
+                setErroGeral(data.message || 'E-mail ou senha inválidos');
+                dispararErro();
+                return;
+            }
+
+            // Sucesso
+            if (response.ok) {
+                console.log('Login realizado com sucesso:', data);
+                router.replace('/home' as any);
+            }
+
+        } catch (e) {
+            setErroGeral('Erro na conexão com o servidor');
+            dispararErro();
+            console.error('Erro no login', e);
+        }
     };
 
     return {
         email, setEmail,
         senha, setSenha,
-        erro, errorMessage, validarESubmeter,
+        erro,
+        mensagens,
+        erroGeral,
+        validarESubmeter,
         focusAnimEmail, animateFocus,
         focusAnimSenha,
         errorAnim
