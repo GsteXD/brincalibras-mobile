@@ -1,6 +1,6 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons'; // Para os ícones
 import { Link } from 'expo-router';
-import { Animated, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import { useLogin } from '../../../../hooks/useLogin';
 import { InputAnimado } from '../../components/inputAnimado';
