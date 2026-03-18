@@ -1,9 +1,10 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Animated } from 'react-native';
 
 export const useCadastro = () => {
     const router = useRouter();
+    const { origem } = useLocalSearchParams();
 
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
@@ -48,8 +49,13 @@ export const useCadastro = () => {
 
     const fecharESair = () => {
         setSucesso(false);
-        router.replace('/');
-    }
+
+        if (origem === 'admin') {
+            router.replace('/admin' as any);
+        } else {
+            router.replace('/' as any);
+        }
+    };
 
     const emailValido = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

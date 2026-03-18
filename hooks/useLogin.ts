@@ -119,7 +119,12 @@ export const useLogin = () => {
             // Sucesso
             if (response.ok) {
                 console.log('Login realizado com sucesso:', data);
-                router.replace('/home' as any);
+
+                if (data.role === 'ADMIN') {
+                    router.replace('/admin' as any);
+                } else {
+                    router.replace('/home' as any);
+                }
             }
 
         } catch (e) {
