@@ -32,7 +32,7 @@ export default function AdminScreen() {
   const [modalExcluirVisivel, setModalExcluirVisivel] = useState(false);
   const [usuarioParaExcluir, setUsuarioParaExcluir] = useState<Usuario | null>(null);
 
-  const API_URL = 'http://192.168.15.5:8080/users';
+  const API_URL = 'https://untumultuously-foliaged-elianna.ngrok-free.dev/users';
 
   const carregarUsuarios = async () => {
     try {

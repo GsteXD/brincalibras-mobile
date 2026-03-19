@@ -13,7 +13,8 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.gustavoassissantos1.brincalibrassprint1"
+      "package": "com.gustavoassissantos1.brincalibrassprint1",
+      "usesCleartextTraffic": true
     },
     "web": {
       "output": "static"

@@ -112,7 +112,7 @@ export const useCadastro = () => {
         }
 
         try {
-            const response = await fetch('http://192.168.15.5:8080/users', {
+            const response = await fetch('https://untumultuously-foliaged-elianna.ngrok-free.dev/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nome, email, senha, confirmaSenha })
